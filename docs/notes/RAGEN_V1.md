@@ -37,6 +37,32 @@ RL + 规则奖励（如 GRPO、PPO）在静态单轮任务（数学推理、代�
 
 ## 三、算法：StarPO
 
+### 3.0 StarPO 整体流程
+
+```mermaid
+flowchart LR
+    subgraph Rollout["🎲 Rollout 阶段"]
+        direction TB
+        S0["初始状态 s₀"] --> LLM["LLM 生成\n&lt;think&gt;...&lt;/think&gt;\n&lt;ans&gt;action&lt;/ans&gt;"]
+        LLM --> ENV["环境执行动作\n返回 (r_t, s_{t+1})"]
+        ENV -->|"未终止"| LLM
+        ENV -->|"终止"| TRAJ["完整轨迹 τ"]
+    end
+
+    subgraph Update["📈 Update 阶段"]
+        direction TB
+        TRAJ2["轨迹 τ"] --> ADV["计算优势 A_t\nPPO: GAE\nGRPO: 组内归一化"]
+        ADV --> LOSS["策略梯度损失\n重要性采样"]
+        LOSS --> OPT["更新 π_θ"]
+    end
+
+    TRAJ --> TRAJ2
+    OPT -->|"下一轮"| S0
+
+    style Rollout fill:#e3f2fd,stroke:#1565c0
+    style Update fill:#e8f5e9,stroke:#2e7d32
+```
+
 ### 3.1 MDP 建模
 
 将 Agent-环境交互形式化为**马尔可夫决策过程（MDP）**：
@@ -90,18 +116,27 @@ $$\mathcal{L}(\theta) = -\mathbb{E}_\tau \left[ \sum_t A_t \cdot \log \pi_\theta
 
 ## 四、RAGEN 系统架构
 
-RAGEN 由三个核心模块组成：
+```mermaid
+flowchart TD
+    AP["🔌 Agent Proxy\nagent_proxy.py\n训练 / 评估统一入口"]
 
-```
-┌─────────────────────────────────────────────┐
-│                  Agent Proxy                 │  ← 训练/评估入口
-│         (agent_proxy.py)                     │
-└──────────────┬──────────────────────────────┘
-               │
-    ┌──────────▼──────────┐    ┌────────────────────┐
-    │   Context Manager   │◄──►│  Env State Manager  │
-    │   (ctx_manager.py)  │    │  (es_manager.py)    │
-    └─────────────────────┘    └────────────────────┘
+    AP --> CTX["📝 Context Manager\nctx_manager.py"]
+    AP --> ESM["🌍 Env State Manager\nes_manager.py"]
+
+    CTX <-->|"动作 / 观测"| ESM
+
+    CTX --> |"解析 &lt;ans&gt; 动作"| ESM
+    ESM --> |"格式化观测为 prompt"| CTX
+
+    CTX --> OUT["训练 Token\n(input_ids / attention_mask\n/ rewards / loss_mask)"]
+    ESM --> ENV1["env_1\nSokoban"]
+    ESM --> ENV2["env_2\nFrozenLake"]
+    ESM --> ENV3["env_N\n..."]
+
+    style AP fill:#fff3e0,stroke:#e65100
+    style CTX fill:#e3f2fd,stroke:#1565c0
+    style ESM fill:#f3e5f5,stroke:#6a1b9a
+    style OUT fill:#e8f5e9,stroke:#2e7d32
 ```
 
 | 模块 | 职责 |
@@ -165,6 +200,25 @@ RAGEN 由三个核心模块组成：
 ---
 
 ## 八、与 RAGEN V2 的关系
+
+```mermaid
+timeline
+    title RAGEN 演进路线
+    section V1 (2025.1)
+        StarPO 框架 : MDP 建模
+                    : 推理引导动作格式
+                    : 轨迹级策略梯度
+        RAGEN 系统  : 模块化三组件架构
+                    : 10 个内置环境
+    section 发现问题 (2025.3-4)
+        熵指标不足  : 无法检测 Template Collapse
+                    : 模型对不同输入输出相同推理
+    section V2 (2026.3)
+        崩溃诊断    : 互信息 I(X;Z) 代理指标
+                    : 四类 Reasoning Regime
+        SNR 过滤    : 奖励方差驱动的 Top-p 过滤
+                    : 跨算法/规模稳定提升
+```
 
 | 维度 | V1 | V2 |
 |------|----|----|
