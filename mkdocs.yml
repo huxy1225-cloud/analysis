@@ -1,43 +1,56 @@
-site_name: 论文读书笔记
-site_description: LLM Agent 强化学习相关论文读书笔记
+site_name: LLM Agent RL 论文笔记
+site_description: LLM Agent 强化学习方向论文阅读与复现笔记
 site_url: https://huxy1225-cloud.github.io/analysis
+site_author: huxy1225
 
 theme:
   name: material
   language: zh
   palette:
     - scheme: default
-      primary: indigo
-      accent: indigo
+      primary: custom
+      accent: blue
       toggle:
         icon: material/brightness-7
         name: 切换到暗色模式
     - scheme: slate
-      primary: indigo
-      accent: indigo
+      primary: custom
+      accent: blue
       toggle:
         icon: material/brightness-4
         name: 切换到亮色模式
   features:
     - navigation.tabs
     - navigation.sections
+    - navigation.indexes
     - navigation.top
+    - navigation.expand
+    - toc.integrate
     - search.highlight
     - search.suggest
     - content.code.copy
+    - content.code.annotate
   font:
     text: Noto Sans SC
-    code: Roboto Mono
+    code: JetBrains Mono
+  icon:
+    repo: fontawesome/brands/github
+
+repo_url: https://github.com/huxy1225-cloud/analysis
+repo_name: huxy1225-cloud/analysis
 
 nav:
   - 首页: index.md
-  - 读书笔记:
-    - RAGEN V1 论文笔记: notes/RAGEN_V1.md
-    - RAGEN V1 复现指南: notes/RAGEN_V1_reproduction.md
+  - RAGEN 系列:
+    - 论文笔记 (V1): notes/RAGEN_V1.md
+    - 复现指南 (V1): notes/RAGEN_V1_reproduction.md
 
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
   - pymdownx.superfences
   - pymdownx.tabbed:
       alternate_style: true
@@ -45,11 +58,17 @@ markdown_extensions:
       generic: true
   - admonition
   - pymdownx.details
+  - pymdownx.keys
   - attr_list
   - md_in_html
   - tables
+  - footnotes
   - toc:
       permalink: true
+      title: 本页目录
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
 
 extra_javascript:
   - javascripts/mathjax.js
@@ -57,3 +76,8 @@ extra_javascript:
 
 extra_css:
   - stylesheets/extra.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/huxy1225-cloud

@@ -1,10 +1,12 @@
-# 读书笔记：RAGEN —— 通过强化推理训练 LLM 智能体
+# RAGEN V1 论文笔记
 
-**论文标题：** RAGEN: Understanding Self-Evolution in LLM Agents via Multi-Turn Reinforcement Learning  
-**arXiv：** https://arxiv.org/abs/2504.20073  
-**代码仓库：** https://github.com/RAGEN-AI/RAGEN  
-**作者：** Zihan Wang, Kangrui Wang, Qineng Wang, Pingyue Zhang, Linjie Li 等（Northwestern University / Stanford / Microsoft Research 等）  
-**笔记日期：** 2026-06-04
+!!! abstract "论文信息"
+    **标题：** RAGEN: Understanding Self-Evolution in LLM Agents via Multi-Turn Reinforcement Learning  
+    **arXiv：** [2504.20073](https://arxiv.org/abs/2504.20073)  
+    **代码：** [RAGEN-AI/RAGEN](https://github.com/RAGEN-AI/RAGEN)  
+    **作者：** Zihan Wang, Kangrui Wang, Qineng Wang, Pingyue Zhang, Linjie Li 等  
+    **机构：** Northwestern University / Stanford / Microsoft Research 等  
+    **笔记日期：** 2026-06-04
 
 ---
 
@@ -19,25 +21,17 @@ RL + 规则奖励（如 GRPO、PPO）在静态单轮任务（数学推理、代�
 
 已有方法（如 DeepSeek-R1、TinyZero）针对单轮静态任务设计，缺乏对多轮轨迹和随机环境的统一支持。
 
-### 核心研究问题
-
-> **如何将 RL 训练机制从单轮静态任务推广到多轮、随机、交互式 Agent 场景，并让模型同时学会"推理"和"行动"？**
+!!! note "核心研究问题"
+    如何将 RL 训练机制从单轮静态任务推广到**多轮、随机、交互式 Agent 场景**，并让模型同时学会「推理」和「行动」？
 
 ---
 
 ## 二、核心贡献
 
-### 贡献 1：StarPO 算法框架
-
-**StarPO**（State-Thinking-Action-Reward Policy Optimization）是论文的核心算法，将多轮 Agent 交互统一为轨迹级优化。
-
-### 贡献 2：RAGEN 系统
-
-基于 StarPO 构建的完整训练与评估系统，包含 10 个内置环境、模块化架构，支持快速扩展自定义环境。
-
-### 贡献 3：训练动态分析
-
-系统研究了奖励归一化策略、上下文窗口管理、KL 惩罚等超参数对 Agent RL 训练的影响规律。
+!!! tip "三大贡献"
+    1. **StarPO 算法框架**：将多轮 Agent 交互统一为轨迹级 RL 优化
+    2. **RAGEN 系统**：基于 StarPO 的完整训练与评估系统，含 10 个内置环境
+    3. **训练动态分析**：系统研究奖励归一化、上下文窗口、KL 惩罚对训练的影响
 
 ---
 
@@ -47,13 +41,16 @@ RL + 规则奖励（如 GRPO、PPO）在静态单轮任务（数学推理、代�
 
 将 Agent-环境交互形式化为**马尔可夫决策过程（MDP）**：
 
-- **状态** $s_t$：当前环境观测（token 序列）
-- **动作** $a_t$：模型输出的 token 序列
-- **转移函数** $T(s_{t+1} | s_t, a_t)$：环境状态转移（可随机）
-- **奖励** $r_t$：环境反馈的标量信号
-- **目标**：最大化期望累积奖励 $\mathbb{E}\left[\sum_t r_t\right]$
+| 符号 | 含义 |
+|------|------|
+| $s_t$ | 当前环境观测（token 序列） |
+| $a_t$ | 模型输出的 token 序列 |
+| $T(s_{t+1} \| s_t, a_t)$ | 环境状态转移（可随机） |
+| $r_t$ | 环境反馈的标量奖励 |
+| 目标 | 最大化 $\mathbb{E}\left[\sum_t r_t\right]$ |
 
-与传统 RL 的关键区别：状态和动作都是**token 序列**，而非低维向量，LLM 充当策略网络 $\pi_\theta$。
+!!! note "与传统 RL 的关键区别"
+    状态和动作都是 **token 序列**，而非低维向量，LLM 直接充当策略网络 $\pi_\theta$。
 
 ### 3.2 推理引导的动作格式
 
@@ -66,7 +63,7 @@ RL + 规则奖励（如 GRPO、PPO）在静态单轮任务（数学推理、代�
 - `<think>` 部分：链式推理，引导模型显式分析当前状态
 - `<ans>` 部分：最终执行动作，传入环境
 
-这种设计将"思考"和"行动"解耦，使 RL 同时优化推理质量和动作质量。
+这种设计将「思考」和「行动」解耦，使 RL **同时优化推理质量和动作质量**。
 
 ### 3.3 StarPO 的两个阶段
 
@@ -76,26 +73,18 @@ RL + 规则奖励（如 GRPO、PPO）在静态单轮任务（数学推理、代�
 
 $$\tau = (s_0, a_0, r_0, s_1, a_1, r_1, \ldots, s_T, a_T, r_T)$$
 
-每条轨迹包含 $T$ 轮交互，每轮模型接收历史轨迹 + 当前状态，生成推理 + 动作。
-
 **阶段二：Update（轨迹优化）**
 
-用重要性采样对**完整轨迹**做策略梯度优化，而非逐步优化：
+用重要性采样对**完整轨迹**做策略梯度优化：
 
 $$\mathcal{L}(\theta) = -\mathbb{E}_\tau \left[ \sum_t A_t \cdot \log \pi_\theta(a_t | s_{0:t}) \right]$$
 
-其中优势 $A_t$ 的估计方式支持两种后端：
+优势 $A_t$ 支持两种估计后端：
 
 | 后端 | 优势估计 | 特点 |
 |------|---------|------|
 | **PPO** | GAE（广义优势估计），使用 Critic 网络 | Token 级精细估计，训练更稳定 |
 | **GRPO** | 组内归一化奖励，无需 Critic | 计算更简单，但方差较大 |
-
-两阶段交替进行，实现在线学习。
-
-### 3.4 StarPO 与 GRPO/PPO 的关系
-
-StarPO 是**框架**，GRPO 和 PPO 是其支持的两种**优化算法**。StarPO 的创新在于将它们统一扩展到多轮轨迹级场景，并加入推理引导的动作格式。
 
 ---
 
@@ -117,24 +106,22 @@ RAGEN 由三个核心模块组成：
 
 | 模块 | 职责 |
 |------|------|
-| **Environment State Manager** | 管理多个并行环境实例；执行 `step()`/`reset()`；批量处理动作并返回观测 |
-| **Context Manager** | 解析模型输出的动作；格式化环境观测为 prompt；管理历史上下文窗口（`max_context_window`）；整合轨迹为训练 token |
-| **Agent Proxy** | 统一的 rollout 执行接口；协调 LLM 推理（vLLM）与环境交互 |
+| **Env State Manager** | 管理并行环境实例；执行 `step()`/`reset()`；批量处理动作并返回观测 |
+| **Context Manager** | 解析动作；格式化观测为 prompt；管理历史上下文窗口；整合轨迹为训练 token |
+| **Agent Proxy** | 统一 rollout 执行接口；协调 LLM 推理（vLLM）与环境交互 |
 
-### 关键设计：上下文窗口管理
-
-通过 `max_context_window` 控制模型能看到的历史轮数：
-- `-1`（默认）：保留完整历史
-- `1`：无历史（退化为单轮）
-- `k`：保留最近 k 轮
-
-这个参数对多轮任务的性能有显著影响（历史太长导致上下文过长；太短丢失关键状态）。
+!!! tip "上下文窗口管理"
+    通过 `max_context_window` 控制模型能看到的历史轮数：
+    
+    - `-1`（默认）：保留完整历史
+    - `1`：无历史，退化为单轮
+    - `k`：保留最近 k 轮
 
 ---
 
 ## 五、实验设置
 
-### 5.1 实验环境
+### 实验环境
 
 | 环境 | 类型 | 特点 |
 |------|------|------|
@@ -143,53 +130,41 @@ RAGEN 由三个核心模块组成：
 | **Bandit** | 探索 | 纯探索-利用权衡 |
 | **Spatial** | 空间关系 | 语言描述的空间推理 |
 
-### 5.2 基础模型
+### 基础模型与超参数
 
-主要使用 **Qwen2.5-0.5B-Instruct**（轻量验证）和 **Qwen2.5-3B-Instruct**（主要实验）。
-
-### 5.3 关键超参数
-
+- 基础模型：**Qwen2.5-0.5B-Instruct**（验证）和 **Qwen2.5-3B-Instruct**（主要实验）
 - 无 KL 惩罚（`kl_coef=0`）
-- 仅保留任务成功轨迹的 top 25%（早期实验的过滤策略）
-- PPO 比 GRPO 训练更稳定（后续实验结论）
+- 仅保留成功轨迹的 top 25%
 
 ---
 
 ## 六、主要实验结论
 
-### 结论 1：StarPO 能有效训练多轮 Agent
+!!! success "结论 1：StarPO 能有效训练多轮 Agent"
+    在 Sokoban、FrozenLake、Bandit 任务上，从 Qwen2.5-0.5B 出发，StarPO 训练后 reward 持续上升。
 
-在 Sokoban、FrozenLake、Bandit 任务上，从 Qwen2.5-0.5B 出发，StarPO 训练后 reward 持续上升，验证了框架有效性。
+!!! success "结论 2：推理引导有效"
+    `<think>` 格式使模型显式分析环境状态，尤其在需要多步规划的 Sokoban 上效果明显。
 
-### 结论 2：推理引导（`<think>` 格式）有助于 Agent 学习
+!!! success "结论 3：泛化能力"
+    在简单 Sokoban（6×6，1 box）训练后，能泛化到：更大地图（8×8，2 boxes）、不同符号表示、FrozenLake 等其他环境。
 
-显式推理步骤使模型能更好地分析环境状态，尤其在需要多步规划的 Sokoban 任务上效果明显。
-
-### 结论 3：泛化能力
-
-在简单 Sokoban（6×6，1 box）上训练后，模型能泛化到：
-- 更大地图（8×8，2 boxes）
-- 不同的网格符号表示
-- FrozenLake 等其他环境
-
-说明模型学到了可迁移的推理策略，而非记忆特定状态。
-
-### 结论 4：PPO 比 GRPO 更稳定
-
-多个来源（Open-Reasoner-Zero、TinyZero）和自身实验均发现，PPO（GAE 优势估计）在 Agent 训练中比 GRPO 更稳定，因此后续版本默认切换为 PPO。
+!!! success "结论 4：PPO 比 GRPO 更稳定"
+    多个来源（Open-Reasoner-Zero、TinyZero）和自身实验均发现 PPO（GAE）在 Agent 训练中更稳定，后续版本默认切换为 PPO。
 
 ---
 
 ## 七、局限性与遗留问题
 
-1. **奖励设计依赖领域知识：** 不同环境需要手动设计奖励函数，无法自动化。
-2. **Template Collapse（模板崩溃）问题未被检测：** V1 用熵监测训练质量，但后续发现熵无法检测模型对不同输入输出相同推理模板的问题（这成为 V2 的核心研究对象）。
-3. **WebShop 等复杂环境的扩展性：** 真实世界复杂环境（网页交互等）的集成较繁琐。
-4. **多节点分布式训练：** V1 主要在单节点多 GPU 上验证，分布式扩展留待后续。
+!!! warning "已知局限"
+    1. **奖励设计依赖领域知识：** 不同环境需要手动设计奖励函数。
+    2. **Template Collapse 未被检测：** 熵指标无法发现模型对不同输入输出相同推理模板的问题，这成为 V2 的核心研究对象。
+    3. **复杂环境扩展性：** WebShop 等真实环境集成较繁琐。
+    4. **分布式训练：** V1 主要在单节点多 GPU 上验证。
 
 ---
 
-## 八、与后续工作（RAGEN V2）的关系
+## 八、与 RAGEN V2 的关系
 
 | 维度 | V1 | V2 |
 |------|----|----|
@@ -198,11 +173,14 @@ RAGEN 由三个核心模块组成：
 | 发现的新问题 | — | Template Collapse（熵盲区）|
 | 训练干预 | 轨迹过滤（top 25%） | 奖励方差过滤（Top-p）|
 
-V2 的核心动机直接来自 V1 的遗留问题：发现熵指标不足以诊断训练质量，进而提出 MI 代理指标。
+V2 的核心动机直接来自 V1 的遗留问题：熵指标不足以诊断训练质量。
 
 ---
 
 ## 九、核心思想总结
+
+!!! abstract "一句话总结"
+    StarPO 将多轮 Agent 的「推理-行动-奖励」统一建模为轨迹级 MDP，用重要性采样做端到端优化，让 LLM 同时学会在随机交互环境中推理和决策。
 
 ```
 单轮 RL（GRPO/PPO）
