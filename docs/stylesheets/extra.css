@@ -1,0 +1,8 @@
+:root {
+  --md-primary-fg-color: #3f51b5;
+}
+
+.md-typeset table:not([class]) th {
+  background-color: var(--md-primary-fg-color);
+  color: white;
+}
