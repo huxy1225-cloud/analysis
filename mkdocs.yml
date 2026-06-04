@@ -32,7 +32,8 @@ theme:
 nav:
   - 首页: index.md
   - 读书笔记:
-    - RAGEN V1: notes/RAGEN_V1.md
+    - RAGEN V1 论文笔记: notes/RAGEN_V1.md
+    - RAGEN V1 复现指南: notes/RAGEN_V1_reproduction.md
 
 markdown_extensions:
   - pymdownx.highlight:
