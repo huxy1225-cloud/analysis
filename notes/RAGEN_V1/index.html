@@ -1,0 +1,1159 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="LLM Agent 强化学习方向论文阅读与复现笔记">
+      
+      
+        <meta name="author" content="huxy1225">
+      
+      
+        <link rel="canonical" href="https://huxy1225-cloud.github.io/analysis/notes/RAGEN_V1/">
+      
+      
+        <link rel="prev" href="../..">
+      
+      
+        <link rel="next" href="../RAGEN_V1_reproduction/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>论文笔记 (V1) - LLM Agent RL 论文笔记</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+SC:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Noto Sans SC";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#ragen-v1" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../.." title="LLM Agent RL 论文笔记" class="md-header__button md-logo" aria-label="LLM Agent RL 论文笔记" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LLM Agent RL 论文笔记
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              论文笔记 (V1)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="blue"  aria-label="切换到暗色模式"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="切换到暗色模式" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="blue"  aria-label="切换到亮色模式"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="切换到亮色模式" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/huxy1225-cloud/analysis" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    huxy1225-cloud/analysis
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  首页
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+    
+  
+  RAGEN 系列
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="LLM Agent RL 论文笔记" class="md-nav__button md-logo" aria-label="LLM Agent RL 论文笔记" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LLM Agent RL 论文笔记
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/huxy1225-cloud/analysis" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    huxy1225-cloud/analysis
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RAGEN 系列
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    RAGEN 系列
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    论文笔记 (V1)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    论文笔记 (V1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="本页目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      本页目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        一、研究背景与动机
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="一、研究背景与动机">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        问题出发点
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        二、核心贡献
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#starpo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        三、算法：StarPO
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="三、算法：StarPO">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#30-starpo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.0 StarPO 整体流程
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#31-mdp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 MDP 建模
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 推理引导的动作格式
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-starpo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 StarPO 的两个阶段
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ragen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        四、RAGEN 系统架构
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        五、实验设置
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="五、实验设置">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        实验环境
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        基础模型与超参数
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        六、主要实验结论
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        七、局限性与遗留问题
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ragen-v2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        八、与 RAGEN V2 的关系
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        九、核心思想总结
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        十、引用
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RAGEN_V1_reproduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    复现指南 (V1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="ragen-v1">RAGEN V1 论文笔记<a class="headerlink" href="#ragen-v1" title="Permanent link">&para;</a></h1>
+<div class="admonition abstract">
+<p class="admonition-title">论文信息</p>
+<p><strong>标题：</strong> RAGEN: Understanding Self-Evolution in LLM Agents via Multi-Turn Reinforcement Learning<br />
+<strong>arXiv：</strong> <a href="https://arxiv.org/abs/2504.20073">2504.20073</a><br />
+<strong>代码：</strong> <a href="https://github.com/RAGEN-AI/RAGEN">RAGEN-AI/RAGEN</a><br />
+<strong>作者：</strong> Zihan Wang, Kangrui Wang, Qineng Wang, Pingyue Zhang, Linjie Li 等<br />
+<strong>机构：</strong> Northwestern University / Stanford / Microsoft Research 等<br />
+<strong>笔记日期：</strong> 2026-06-04</p>
+</div>
+<hr />
+<h2 id="_1">一、研究背景与动机<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<h3 id="_2">问题出发点<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<p>RL + 规则奖励（如 GRPO、PPO）在静态单轮任务（数学推理、代码生成）上已经验证有效，但直接迁移到<strong>多轮 Agent 场景</strong>存在两个本质困难：</p>
+<ol>
+<li><strong>多轮交互（Multi-turn Interaction）：</strong> Agent 需要根据环境反馈连续决策，动作之间有时序依赖，无法按单轮处理。</li>
+<li><strong>随机性环境（Stochastic Environment）：</strong> 相同动作可能导致不同结果（如 FrozenLake 的随机滑动），奖励信号噪声大。</li>
+</ol>
+<p>已有方法（如 DeepSeek-R1、TinyZero）针对单轮静态任务设计，缺乏对多轮轨迹和随机环境的统一支持。</p>
+<div class="admonition note">
+<p class="admonition-title">核心研究问题</p>
+<p>如何将 RL 训练机制从单轮静态任务推广到<strong>多轮、随机、交互式 Agent 场景</strong>，并让模型同时学会「推理」和「行动」？</p>
+</div>
+<hr />
+<h2 id="_3">二、核心贡献<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<div class="admonition tip">
+<p class="admonition-title">三大贡献</p>
+<ol>
+<li><strong>StarPO 算法框架</strong>：将多轮 Agent 交互统一为轨迹级 RL 优化</li>
+<li><strong>RAGEN 系统</strong>：基于 StarPO 的完整训练与评估系统，含 10 个内置环境</li>
+<li><strong>训练动态分析</strong>：系统研究奖励归一化、上下文窗口、KL 惩罚对训练的影响</li>
+</ol>
+</div>
+<hr />
+<h2 id="starpo">三、算法：StarPO<a class="headerlink" href="#starpo" title="Permanent link">&para;</a></h2>
+<h3 id="30-starpo">3.0 StarPO 整体流程<a class="headerlink" href="#30-starpo" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>flowchart LR
+    subgraph Rollout["🎲 Rollout 阶段"]
+        direction TB
+        S0["初始状态 s₀"] --&gt; LLM["LLM 生成\n&amp;lt;think&amp;gt;...&amp;lt;/think&amp;gt;\n&amp;lt;ans&amp;gt;action&amp;lt;/ans&amp;gt;"]
+        LLM --&gt; ENV["环境执行动作\n返回 (r_t, s_{t+1})"]
+        ENV --&gt;|"未终止"| LLM
+        ENV --&gt;|"终止"| TRAJ["完整轨迹 τ"]
+    end
+
+    subgraph Update["📈 Update 阶段"]
+        direction TB
+        TRAJ2["轨迹 τ"] --&gt; ADV["计算优势 A_t\nPPO: GAE\nGRPO: 组内归一化"]
+        ADV --&gt; LOSS["策略梯度损失\n重要性采样"]
+        LOSS --&gt; OPT["更新 π_θ"]
+    end
+
+    TRAJ --&gt; TRAJ2
+    OPT --&gt;|"下一轮"| S0
+
+    style Rollout fill:#e3f2fd,stroke:#1565c0
+    style Update fill:#e8f5e9,stroke:#2e7d32</code></pre>
+<h3 id="31-mdp">3.1 MDP 建模<a class="headerlink" href="#31-mdp" title="Permanent link">&para;</a></h3>
+<p>将 Agent-环境交互形式化为<strong>马尔可夫决策过程（MDP）</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(s_t\)</span></td>
+<td>当前环境观测（token 序列）</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(a_t\)</span></td>
+<td>模型输出的 token 序列</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(T(s_{t+1} \| s_t, a_t)\)</span></td>
+<td>环境状态转移（可随机）</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(r_t\)</span></td>
+<td>环境反馈的标量奖励</td>
+</tr>
+<tr>
+<td>目标</td>
+<td>最大化 <span class="arithmatex">\(\mathbb{E}\left[\sum_t r_t\right]\)</span></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">与传统 RL 的关键区别</p>
+<p>状态和动作都是 <strong>token 序列</strong>，而非低维向量，LLM 直接充当策略网络 <span class="arithmatex">\(\pi_\theta\)</span>。</p>
+</div>
+<h3 id="32">3.2 推理引导的动作格式<a class="headerlink" href="#32" title="Permanent link">&para;</a></h3>
+<p>模型在每一步输出固定格式：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>&lt;think&gt; 推理过程 &lt;/think&gt; &lt;ans&gt; 动作 &lt;/ans&gt;
+</span></code></pre></div>
+<ul>
+<li><code>&lt;think&gt;</code> 部分：链式推理，引导模型显式分析当前状态</li>
+<li><code>&lt;ans&gt;</code> 部分：最终执行动作，传入环境</li>
+</ul>
+<p>这种设计将「思考」和「行动」解耦，使 RL <strong>同时优化推理质量和动作质量</strong>。</p>
+<h3 id="33-starpo">3.3 StarPO 的两个阶段<a class="headerlink" href="#33-starpo" title="Permanent link">&para;</a></h3>
+<p><strong>阶段一：Rollout（轨迹生成）</strong></p>
+<p>给定初始状态 <span class="arithmatex">\(s_0\)</span>，LLM 生成多条完整轨迹：</p>
+<div class="arithmatex">\[\tau = (s_0, a_0, r_0, s_1, a_1, r_1, \ldots, s_T, a_T, r_T)\]</div>
+<p><strong>阶段二：Update（轨迹优化）</strong></p>
+<p>用重要性采样对<strong>完整轨迹</strong>做策略梯度优化：</p>
+<div class="arithmatex">\[\mathcal{L}(\theta) = -\mathbb{E}_\tau \left[ \sum_t A_t \cdot \log \pi_\theta(a_t | s_{0:t}) \right]\]</div>
+<p>优势 <span class="arithmatex">\(A_t\)</span> 支持两种估计后端：</p>
+<table>
+<thead>
+<tr>
+<th>后端</th>
+<th>优势估计</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PPO</strong></td>
+<td>GAE（广义优势估计），使用 Critic 网络</td>
+<td>Token 级精细估计，训练更稳定</td>
+</tr>
+<tr>
+<td><strong>GRPO</strong></td>
+<td>组内归一化奖励，无需 Critic</td>
+<td>计算更简单，但方差较大</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="ragen">四、RAGEN 系统架构<a class="headerlink" href="#ragen" title="Permanent link">&para;</a></h2>
+<pre class="mermaid"><code>flowchart TD
+    AP["🔌 Agent Proxy\nagent_proxy.py\n训练 / 评估统一入口"]
+
+    AP --&gt; CTX["📝 Context Manager\nctx_manager.py"]
+    AP --&gt; ESM["🌍 Env State Manager\nes_manager.py"]
+
+    CTX &lt;--&gt;|"动作 / 观测"| ESM
+
+    CTX --&gt; |"解析 &amp;lt;ans&amp;gt; 动作"| ESM
+    ESM --&gt; |"格式化观测为 prompt"| CTX
+
+    CTX --&gt; OUT["训练 Token\n(input_ids / attention_mask\n/ rewards / loss_mask)"]
+    ESM --&gt; ENV1["env_1\nSokoban"]
+    ESM --&gt; ENV2["env_2\nFrozenLake"]
+    ESM --&gt; ENV3["env_N\n..."]
+
+    style AP fill:#fff3e0,stroke:#e65100
+    style CTX fill:#e3f2fd,stroke:#1565c0
+    style ESM fill:#f3e5f5,stroke:#6a1b9a
+    style OUT fill:#e8f5e9,stroke:#2e7d32</code></pre>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>职责</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Env State Manager</strong></td>
+<td>管理并行环境实例；执行 <code>step()</code>/<code>reset()</code>；批量处理动作并返回观测</td>
+</tr>
+<tr>
+<td><strong>Context Manager</strong></td>
+<td>解析动作；格式化观测为 prompt；管理历史上下文窗口；整合轨迹为训练 token</td>
+</tr>
+<tr>
+<td><strong>Agent Proxy</strong></td>
+<td>统一 rollout 执行接口；协调 LLM 推理（vLLM）与环境交互</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">上下文窗口管理</p>
+<p>通过 <code>max_context_window</code> 控制模型能看到的历史轮数：</p>
+<ul>
+<li><code>-1</code>（默认）：保留完整历史</li>
+<li><code>1</code>：无历史，退化为单轮</li>
+<li><code>k</code>：保留最近 k 轮</li>
+</ul>
+</div>
+<hr />
+<h2 id="_4">五、实验设置<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<h3 id="_5">实验环境<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>环境</th>
+<th>类型</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Sokoban</strong></td>
+<td>空间推理</td>
+<td>多步规划，确定性</td>
+</tr>
+<tr>
+<td><strong>FrozenLake</strong></td>
+<td>导航</td>
+<td>随机滑动，需鲁棒策略</td>
+</tr>
+<tr>
+<td><strong>Bandit</strong></td>
+<td>探索</td>
+<td>纯探索-利用权衡</td>
+</tr>
+<tr>
+<td><strong>Spatial</strong></td>
+<td>空间关系</td>
+<td>语言描述的空间推理</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_6">基础模型与超参数<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li>基础模型：<strong>Qwen2.5-0.5B-Instruct</strong>（验证）和 <strong>Qwen2.5-3B-Instruct</strong>（主要实验）</li>
+<li>无 KL 惩罚（<code>kl_coef=0</code>）</li>
+<li>仅保留成功轨迹的 top 25%</li>
+</ul>
+<hr />
+<h2 id="_7">六、主要实验结论<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<div class="admonition success">
+<p class="admonition-title">结论 1：StarPO 能有效训练多轮 Agent</p>
+<p>在 Sokoban、FrozenLake、Bandit 任务上，从 Qwen2.5-0.5B 出发，StarPO 训练后 reward 持续上升。</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">结论 2：推理引导有效</p>
+<p><code>&lt;think&gt;</code> 格式使模型显式分析环境状态，尤其在需要多步规划的 Sokoban 上效果明显。</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">结论 3：泛化能力</p>
+<p>在简单 Sokoban（6×6，1 box）训练后，能泛化到：更大地图（8×8，2 boxes）、不同符号表示、FrozenLake 等其他环境。</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">结论 4：PPO 比 GRPO 更稳定</p>
+<p>多个来源（Open-Reasoner-Zero、TinyZero）和自身实验均发现 PPO（GAE）在 Agent 训练中更稳定，后续版本默认切换为 PPO。</p>
+</div>
+<hr />
+<h2 id="_8">七、局限性与遗留问题<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">已知局限</p>
+<ol>
+<li><strong>奖励设计依赖领域知识：</strong> 不同环境需要手动设计奖励函数。</li>
+<li><strong>Template Collapse 未被检测：</strong> 熵指标无法发现模型对不同输入输出相同推理模板的问题，这成为 V2 的核心研究对象。</li>
+<li><strong>复杂环境扩展性：</strong> WebShop 等真实环境集成较繁琐。</li>
+<li><strong>分布式训练：</strong> V1 主要在单节点多 GPU 上验证。</li>
+</ol>
+</div>
+<hr />
+<h2 id="ragen-v2">八、与 RAGEN V2 的关系<a class="headerlink" href="#ragen-v2" title="Permanent link">&para;</a></h2>
+<pre class="mermaid"><code>timeline
+    title RAGEN 演进路线
+    section V1 (2025.1)
+        StarPO 框架 : MDP 建模
+                    : 推理引导动作格式
+                    : 轨迹级策略梯度
+        RAGEN 系统  : 模块化三组件架构
+                    : 10 个内置环境
+    section 发现问题 (2025.3-4)
+        熵指标不足  : 无法检测 Template Collapse
+                    : 模型对不同输入输出相同推理
+    section V2 (2026.3)
+        崩溃诊断    : 互信息 I(X;Z) 代理指标
+                    : 四类 Reasoning Regime
+        SNR 过滤    : 奖励方差驱动的 Top-p 过滤
+                    : 跨算法/规模稳定提升</code></pre>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>V1</th>
+<th>V2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>核心算法</td>
+<td>StarPO 框架建立</td>
+<td>SNR-Adaptive Filtering</td>
+</tr>
+<tr>
+<td>诊断工具</td>
+<td>熵监测</td>
+<td>互信息（MI）+ 四类 reasoning regime</td>
+</tr>
+<tr>
+<td>发现的新问题</td>
+<td>—</td>
+<td>Template Collapse（熵盲区）</td>
+</tr>
+<tr>
+<td>训练干预</td>
+<td>轨迹过滤（top 25%）</td>
+<td>奖励方差过滤（Top-p）</td>
+</tr>
+</tbody>
+</table>
+<p>V2 的核心动机直接来自 V1 的遗留问题：熵指标不足以诊断训练质量。</p>
+<hr />
+<h2 id="_9">九、核心思想总结<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h2>
+<div class="admonition abstract">
+<p class="admonition-title">一句话总结</p>
+<p>StarPO 将多轮 Agent 的「推理-行动-奖励」统一建模为轨迹级 MDP，用重要性采样做端到端优化，让 LLM 同时学会在随机交互环境中推理和决策。</p>
+</div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>单轮 RL（GRPO/PPO）
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    ↓ 挑战：多轮 + 随机环境
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>StarPO = MDP 建模 + 推理引导动作格式 + 轨迹级策略梯度
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    ↓ 实现
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>RAGEN = StarPO + 模块化系统（ESM + CTX + AP）+ 多环境支持
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    ↓ 发现
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>PPO 比 GRPO 更稳定；推理引导有效；训练质量监测不足（→ V2）
+</span></code></pre></div>
+<hr />
+<h2 id="_10">十、引用<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h2>
+<div class="language-bibtex highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nc">@misc</span><span class="p">{</span><span class="nl">ragen</span><span class="p">,</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="na">title</span><span class="p">=</span><span class="s">{RAGEN: Understanding Self-Evolution in LLM Agents via Multi-Turn Reinforcement Learning}</span><span class="p">,</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="na">author</span><span class="p">=</span><span class="s">{Zihan Wang and Kangrui Wang and Qineng Wang and Pingyue Zhang and Linjie Li and</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="s">          Zhengyuan Yang and Xing Jin and Kefan Yu and Minh Nhat Nguyen and Licheng Liu and</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="s">          Eli Gottlieb and Yiping Lu and Kyunghyun Cho and Jiajun Wu and Li Fei-Fei and</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="s">          Lijuan Wang and Yejin Choi and Manling Li}</span><span class="p">,</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">  </span><span class="na">year</span><span class="p">=</span><span class="s">{2025}</span><span class="p">,</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">  </span><span class="na">eprint</span><span class="p">=</span><span class="s">{2504.20073}</span><span class="p">,</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">  </span><span class="na">archivePrefix</span><span class="p">=</span><span class="s">{arXiv}</span><span class="p">,</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">  </span><span class="na">primaryClass</span><span class="p">=</span><span class="s">{cs.LG}</span><span class="p">,</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">  </span><span class="na">url</span><span class="p">=</span><span class="s">{https://arxiv.org/abs/2504.20073}</span><span class="p">,</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="p">}</span>
+</span></code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/huxy1225-cloud" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.indexes", "navigation.top", "navigation.expand", "toc.integrate", "search.highlight", "search.suggest", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="https://unpkg.com/mermaid@11/dist/mermaid.min.js"></script>
+      
+    
+  </body>
+</html>

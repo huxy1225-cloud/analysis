@@ -1,0 +1,126 @@
+/* 主色调：参考 Jupyter Book 的蓝色学术风 */
+:root {
+  --md-primary-fg-color: #1565c0;
+  --md-primary-fg-color--light: #1976d2;
+  --md-primary-fg-color--dark: #0d47a1;
+  --md-accent-fg-color: #1976d2;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #1e88e5;
+  --md-primary-fg-color--light: #42a5f5;
+  --md-primary-fg-color--dark: #1565c0;
+}
+
+/* 正文宽度加宽，阅读感更好 */
+.md-grid {
+  max-width: 1200px;
+}
+
+/* 表格样式：交替行 + 表头深色 */
+.md-typeset table:not([class]) {
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.md-typeset table:not([class]) th {
+  background-color: var(--md-primary-fg-color);
+  color: white;
+  font-weight: 600;
+}
+
+.md-typeset table:not([class]) tr:nth-child(even) {
+  background-color: rgba(21, 101, 192, 0.05);
+}
+
+/* admonition 样式调整：更贴近 Jupyter Book */
+.md-typeset .admonition,
+.md-typeset details {
+  border-radius: 6px;
+  border-left-width: 4px;
+  font-size: 0.92rem;
+}
+
+/* note 框：蓝色，对应截图里的蓝色引用框 */
+.md-typeset .admonition.note,
+.md-typeset details.note {
+  border-color: #1565c0;
+  background-color: rgba(21, 101, 192, 0.06);
+}
+
+.md-typeset .note > .admonition-title,
+.md-typeset .note > summary {
+  background-color: rgba(21, 101, 192, 0.15);
+  color: #1565c0;
+}
+
+/* tip 框：绿色 */
+.md-typeset .admonition.tip,
+.md-typeset details.tip {
+  border-color: #2e7d32;
+  background-color: rgba(46, 125, 50, 0.05);
+}
+
+/* warning 框：橙色 */
+.md-typeset .admonition.warning,
+.md-typeset details.warning {
+  border-color: #e65100;
+  background-color: rgba(230, 81, 0, 0.05);
+}
+
+/* 代码块 */
+.md-typeset code {
+  border-radius: 4px;
+  font-size: 0.88em;
+}
+
+/* 左侧导航字体稍小 */
+.md-nav__item {
+  font-size: 0.85rem;
+}
+
+/* 页面标题下加一条分割线 */
+.md-typeset h1 {
+  border-bottom: 2px solid var(--md-primary-fg-color);
+  padding-bottom: 0.3em;
+  margin-bottom: 1em;
+}
+
+/* 章节标题 */
+.md-typeset h2 {
+  color: var(--md-primary-fg-color);
+  font-weight: 700;
+  margin-top: 2em;
+}
+
+.md-typeset h3 {
+  font-weight: 600;
+  margin-top: 1.4em;
+}
+
+/* 首页卡片式布局 */
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.2rem;
+  margin-top: 1.5rem;
+}
+
+.home-card {
+  border: 1px solid rgba(21, 101, 192, 0.2);
+  border-radius: 8px;
+  padding: 1.2rem 1.5rem;
+  transition: box-shadow 0.2s, transform 0.2s;
+  background: var(--md-default-bg-color);
+}
+
+.home-card:hover {
+  box-shadow: 0 4px 16px rgba(21, 101, 192, 0.15);
+  transform: translateY(-2px);
+}
+
+.home-card h3 {
+  margin-top: 0.3em;
+  color: var(--md-primary-fg-color);
+}
